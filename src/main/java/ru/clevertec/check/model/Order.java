@@ -43,15 +43,6 @@ public class Order {
             productQuantities.put(productId, quantity);
     }
 
-    @Override
-    public String toString() {
-        return "Order{" +
-                "productQuantities=" + productQuantities +
-                ", discountCardNumber='" + discountCardNumber + '\'' +
-                ", balanceDebitCard=" + balanceDebitCard +
-                '}';
-    }
-
     public static Order parseArgumentsToOrder(String[] arguments) {
         Order order = new Order();
         for (String arg : arguments) {

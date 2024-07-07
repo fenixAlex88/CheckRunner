@@ -8,6 +8,13 @@ public class Product {
     private boolean isWholesale;
     private int quantity;
 
+    public Product(int id, String description, double price, boolean isWholesale, int quantity) {
+        this.id = id;
+        this.description = description;
+        this.price = price;
+        this.isWholesale = isWholesale;
+        this.quantity = quantity;
+    }
 
     public double getTotalPrice() {
         return price * quantity;

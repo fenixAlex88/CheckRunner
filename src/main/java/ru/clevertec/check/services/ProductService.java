@@ -1,0 +1,26 @@
+package ru.clevertec.check.services;
+
+import ru.clevertec.check.model.Product;
+import ru.clevertec.check.utils.CSVWorker;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class ProductService {
+    private static final String PRODUCTS_CSV = "./src/main/resources/products.csv";
+
+    public static Map<Integer, Product> getAllProducts() {
+        List<String[]> productsData = CSVWorker.readCSV(PRODUCTS_CSV, ";");
+        Map<Integer, Product> products = new HashMap<>();
+        for (String[] productData : productsData) {
+            int id = Integer.parseInt(productData[0]);
+            String description = productData[1];
+            double price = Double.parseDouble(productData[2]);
+            int quantityInStock = Integer.parseInt(productData[3]);
+            boolean isWholesale = Boolean.parseBoolean(productData[4]);
+            products.put(id, new Product(id, description, price, isWholesale, quantityInStock));
+        }
+        return products;
+    }
+}
