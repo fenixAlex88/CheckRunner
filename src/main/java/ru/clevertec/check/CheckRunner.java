@@ -25,9 +25,9 @@ public class CheckRunner {
         } catch (NotEnoughMoneyException | BadRequestException | InternalServerErrorException e) {
             System.err.println(e.getMessage());
             CSVWorker.writeCSV("./result.csv", e.getMessage());
-        } /*catch (Exception e) {
+        } catch (Exception e) {
             System.err.println("INTERNAL SERVER ERROR");
             CSVWorker.writeCSV("./result.csv", "INTERNAL SERVER ERROR");
-        }*/
+        }
     }
 }
