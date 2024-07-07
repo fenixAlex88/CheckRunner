@@ -45,10 +45,9 @@ public class CheckService {
         return new String[]{cardNumber, discountRate + "%"};
     }
 
-    public static List<String[]> generateCheck(Order order, Map<Integer, Product> products,
+    public static List<String[]> generateCheck(Order order, List<Product> products,
                                                int discountCardRate) {
         List<String[]> checkData = new ArrayList<>();
-        final String[] EmptyLine = new String[]{};
         final String[] dateTimeHeaders = new String[]{"Date", "Time"};
         final String[] productsHeaders = new String[]{"QTY", "DESCRIPTION", "PRICE", "DISCOUNT", "TOTAL"};
         final String[] discountInfoHeaders = new String[]{"DISCOUNT CARD", "DISCOUNT PERCENTAGE"};
@@ -59,13 +58,13 @@ public class CheckService {
 
         checkData.add(dateTimeHeaders);
         checkData.add(generateDateTimeLine());
-        checkData.add(EmptyLine);
+        checkData.add(new String[0]);
 
         checkData.add(productsHeaders);
         for (Map.Entry<Integer, Integer> entry : order.getProductQuantities().entrySet()) {
             int productId = entry.getKey();
             int quantity = entry.getValue();
-            Product product = products.get(productId);
+            Product product = products.stream().filter(p -> p.getId() == productId).findFirst().orElse(null);
             if (product == null || product.getQuantity() < order.getProductQuantities().get(productId))
                 throw new BadRequestException();
             String productDescription = product.getDescription();
@@ -86,11 +85,11 @@ public class CheckService {
 
         if (order.getDiscountCardNumber() != null && !order.getDiscountCardNumber().isEmpty()) {
             String discountCardNumber = order.getDiscountCardNumber();
-            checkData.add(EmptyLine);
+            checkData.add(new String[0]);
             checkData.add(discountInfoHeaders);
             checkData.add(generateDiscountInfoLine(discountCardNumber, discountCardRate));
         }
-        checkData.add(EmptyLine);
+        checkData.add(new String[0]);
         checkData.add(totalsHeaders);
         checkData.add(generateTotalsLine(totalPrice, totalDiscount, totalWithDiscount));
 
