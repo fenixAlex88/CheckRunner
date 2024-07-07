@@ -1,4 +1,4 @@
-id;description;price;quantity in stock;wholesale product
+id;description;price;quantity_in_stock;wholesale_product
 1;Milk;1.07;10;true
 2;Cream 400g;2.71;20;true
 3;Yogurt 400g;2.10;7;true
