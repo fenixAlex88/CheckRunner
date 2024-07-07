@@ -42,4 +42,32 @@ public class Order {
         else
             productQuantities.put(productId, quantity);
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "productQuantities=" + productQuantities +
+                ", discountCardNumber='" + discountCardNumber + '\'' +
+                ", balanceDebitCard=" + balanceDebitCard +
+                '}';
+    }
+
+    public static Order parseArgumentsToOrder(String[] arguments) {
+        Order order = new Order();
+        for (String arg : arguments) {
+            if (arg.contains("-")) {
+                String[] parts = arg.split("-");
+                int productId = Integer.parseInt(parts[0]);
+                int quantity = Integer.parseInt(parts[1]);
+                order.addProduct(productId, quantity);
+            } else if (arg.startsWith("discountCard=")) {
+                String cardNumber = arg.substring("discountCard=".length());
+                order.setDiscountCardNumber(cardNumber);
+            } else if (arg.startsWith("balanceDebitCard=")) {
+                double balance = Double.parseDouble(arg.substring("balanceDebitCard=".length()));
+                order.setBalanceDebitCard(balance);
+            }
+        }
+        return order;
+    }
 }
