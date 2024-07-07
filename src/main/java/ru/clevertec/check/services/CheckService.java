@@ -1,5 +1,7 @@
 package ru.clevertec.check.services;
 
+import ru.clevertec.check.exception.NotEnoughMoneyException;
+import ru.clevertec.check.exception.BadRequestException;
 import ru.clevertec.check.model.Order;
 import ru.clevertec.check.model.Product;
 import ru.clevertec.check.utils.CSVWorker;
@@ -64,6 +66,8 @@ public class CheckService {
             int productId = entry.getKey();
             int quantity = entry.getValue();
             Product product = products.get(productId);
+            if (product == null || product.getQuantity() < order.getProductQuantities().get(productId))
+                throw new BadRequestException();
             String productDescription = product.getDescription();
             double discountRate = product.isWholesale() && quantity >= 5 ? 10 : discountCardRate;
             double cost = product.getPrice() * quantity;
@@ -75,6 +79,9 @@ public class CheckService {
             totalPrice += cost;
             totalDiscount += discountAmount;
             totalWithDiscount += withDiscount;
+        }
+        if (totalPrice > order.getBalanceDebitCard()) {
+            throw new NotEnoughMoneyException();
         }
 
         if (order.getDiscountCardNumber() != null && !order.getDiscountCardNumber().isEmpty()) {

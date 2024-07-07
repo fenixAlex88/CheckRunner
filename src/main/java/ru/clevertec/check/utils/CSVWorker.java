@@ -1,5 +1,7 @@
 package ru.clevertec.check.utils;
 
+import ru.clevertec.check.exception.InternalServerErrorException;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +18,7 @@ public class CSVWorker {
                 data.add(lineData);
             }
         } catch (IOException e) {
-
-            e.printStackTrace();
+            throw new InternalServerErrorException();
         }
         return data;
     }
@@ -30,17 +31,17 @@ public class CSVWorker {
                 bw.newLine();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new InternalServerErrorException();
         }
     }
 
-    public static void writeCSV(String filePath, Exception err) {
+    public static void writeCSV(String filePath, String message) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
             bw.write("ERROR");
             bw.newLine();
-            bw.write(err.getMessage());
+            bw.write(message);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new InternalServerErrorException();
         }
     }
 }
