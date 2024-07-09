@@ -1,33 +1,28 @@
 package ru.clevertec.check;
 
-import ru.clevertec.check.exception.InternalServerErrorException;
-import ru.clevertec.check.exception.NotEnoughMoneyException;
-import ru.clevertec.check.exception.BadRequestException;
-import ru.clevertec.check.model.Order;
-import ru.clevertec.check.model.Product;
-import ru.clevertec.check.services.CheckService;
-import ru.clevertec.check.services.DiscountService;
-import ru.clevertec.check.services.ProductService;
+import ru.clevertec.check.services.*;
 import ru.clevertec.check.utils.CSVWorker;
-
-import java.util.List;
+import ru.clevertec.check.utils.CSVWorkerImpl;
 
 public class CheckRunner {
+    private static final String PRODUCTS_CSV = "./src/main/resources/products.csv";
+    private static final String DISCOUNT_CARDS_CSV = "./src/main/resources/discountCards.csv";
+    private static final String RESULT_CSV = "./result.csv";
+
     public static void main(String[] args) {
         try {
-            Order order = Order.parseArgumentsToOrder(args);
-            int discountCardRate = DiscountService.getDiscountByCardNumber(order.getDiscountCardNumber());
-//            Map<Integer, Product> products = ProductService.getAllProducts();
-            List<Product> products = ProductService.getProductsByIds(order.getProductQuantities().keySet());
-            List<String[]> checkData = CheckService.generateCheck(order, products, discountCardRate);
-            CheckService.printCheckToConsole(checkData);
-            CheckService.saveCheckToCSV(checkData, "./result.csv");
-        } catch (NotEnoughMoneyException | BadRequestException | InternalServerErrorException e) {
-            System.err.println(e.getMessage());
-            CSVWorker.writeCSV("./result.csv", e.getMessage());
+            ProductService productService = new ProductServiceImpl(PRODUCTS_CSV);
+            DiscountCardService discountCardService = new DiscountCardServiceImpl(DISCOUNT_CARDS_CSV);
+            CheckService checkService = new CheckServiceImpl(productService, discountCardService);
+
+            checkService.parseArgs(args);
+            checkService.saveCheckToCSV(RESULT_CSV);
+            checkService.printCheckToConsole();
         } catch (Exception e) {
-            System.err.println("INTERNAL SERVER ERROR");
-            CSVWorker.writeCSV("./result.csv", "INTERNAL SERVER ERROR");
+            System.err.println(e.getMessage());
+            CSVWorker csvWorker = new CSVWorkerImpl();
+            csvWorker.writeErrorToCSV(e.getMessage(), RESULT_CSV);
         }
     }
+
 }
