@@ -46,13 +46,12 @@ public enum Formatter implements IFormatter {
         }
     },
     DISCOUNT {
-        private final String discountFormat = IFormatter.DISCOUNT_PERCENTAGE_FORMAT;
         private final RuntimeException internalServerErrorException = CustomExceptionFactory.createException(CustomExceptionType.INTERNAL_SERVER_ERROR);
 
         @Override
         public String format(Object object) {
             if (object instanceof Integer) {
-                return object + "%";
+                return object + IFormatter.DISCOUNT_PERCENTAGE_FORMAT;
             }
             throw internalServerErrorException;
         }

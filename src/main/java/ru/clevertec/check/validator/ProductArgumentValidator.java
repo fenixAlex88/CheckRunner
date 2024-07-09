@@ -1,6 +1,6 @@
 package ru.clevertec.check.validator;
 
-// Специализированный валидатор для продуктов и их количества
+// A specialized validator for products and their quantity
 public class ProductArgumentValidator implements ArgumentValidator {
 
     @Override

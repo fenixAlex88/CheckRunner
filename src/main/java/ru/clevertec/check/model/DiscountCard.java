@@ -35,11 +35,6 @@ public class DiscountCard {
             return new DiscountCard(this);
         }
     }
-
-    public int getId() {
-        return id;
-    }
-
     public int getNumber() {
         return number;
     }

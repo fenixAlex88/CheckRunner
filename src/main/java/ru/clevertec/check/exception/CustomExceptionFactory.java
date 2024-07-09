@@ -6,7 +6,6 @@ public class CustomExceptionFactory {
             case BAD_REQUEST -> new BadRequestException(type.getErrorMessage());
             case INTERNAL_SERVER_ERROR -> new InternalServerErrorException(type.getErrorMessage());
             case NOT_ENOUGH_MONEY -> new NotEnoughMoneyException(type.getErrorMessage());
-            default -> throw new IllegalArgumentException("Unknown exception type: " + type);
         };
     }
     private static class InternalServerErrorException extends RuntimeException {
