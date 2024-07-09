@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CheckServiceImpl implements CheckService {
+    private final RuntimeException badRequestException = CustomExceptionFactory.createException(CustomExceptionType.BAD_REQUEST);
     private final ProductService productService;
     private final DiscountCardService discountCardService;
     private final List<ProductItem> productItems = new ArrayList<>();
@@ -33,12 +34,18 @@ public class CheckServiceImpl implements CheckService {
     private void addProductItem(int productId, int productQuantity) {
         Product product = productService.getProductById(productId);
         if (product == null || product.getQuantityInStock() < productQuantity) {
-            throw new IllegalArgumentException();
+            throw badRequestException;
         }
-       productItems.add(new ProductItem.Builder()
-                .setProduct(product)
-                .setProductQuantity(productQuantity)
-                .build());
+        ProductItem existingItem = productItems.stream()
+                .filter(p -> p.getProduct().getId() == productId)
+                .findFirst()
+                .orElse(null);
+
+        if (existingItem != null) {
+            existingItem.setProductQuantity(existingItem.getProductQuantity() + productQuantity);
+        } else {
+            productItems.add(new ProductItem(product, productQuantity));
+        }
     }
 
     @Override
@@ -46,7 +53,6 @@ public class CheckServiceImpl implements CheckService {
         ArgumentValidator productIdQuantityValidator = new ProductArgumentValidator();
         ArgumentValidator discountCardValidator = ValidatorFactory.createValidator(ArgumentValidator.DISCOUNT_CARD_REGEX);
         ArgumentValidator balanceDebitCardValidator = ValidatorFactory.createValidator(ArgumentValidator.BALANCE_DEBIT_CARD_REGEX);
-        RuntimeException badRequestException = CustomExceptionFactory.createException(CustomExceptionType.BAD_REQUEST);
 
         boolean hasProducts = false;
         boolean hasBalance = false;
