@@ -5,7 +5,6 @@ import ru.clevertec.check.exception.BadRequestException;
 import ru.clevertec.check.model.Order;
 import ru.clevertec.check.model.Product;
 import ru.clevertec.check.utils.CSVWorker;
-import ru.clevertec.check.utils.Formatter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,8 +17,8 @@ public class CheckService {
         LocalDate date = LocalDate.now();
         LocalTime time = LocalTime.now();
         return new String[]{
-                Formatter.formatDate(date),
-                Formatter.formatTime(time)
+                FormatterOld.formatDate(date),
+                FormatterOld.formatTime(time)
         };
     }
 
@@ -27,17 +26,17 @@ public class CheckService {
         return new String[]{
                 String.valueOf(quantity),
                 productDescription,
-                Formatter.formatPrice(cost),
-                Formatter.formatPrice(discountAmount),
-                Formatter.formatPrice(withDiscount)
+                FormatterOld.formatPrice(cost),
+                FormatterOld.formatPrice(discountAmount),
+                FormatterOld.formatPrice(withDiscount)
         };
     }
 
     private static String[] generateTotalsLine(double totalPrice, double totalDiscount, double totalWithDiscount) {
         return new String[]{
-                Formatter.formatPrice(totalPrice),
-                Formatter.formatPrice(totalDiscount),
-                Formatter.formatPrice(totalWithDiscount)
+                FormatterOld.formatPrice(totalPrice),
+                FormatterOld.formatPrice(totalDiscount),
+                FormatterOld.formatPrice(totalWithDiscount)
         };
     }
 
