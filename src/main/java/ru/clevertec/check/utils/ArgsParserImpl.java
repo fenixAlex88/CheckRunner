@@ -17,21 +17,28 @@ public enum ArgsParserImpl implements ArgsParser {
     private int discountCart;
     private double balanceDebitCard;
     private final List<String[]> productsList = new ArrayList<>();
-    private String pathToFilePath;
     private String saveToFilePath;
+    private String datasourceUrl;
+    private String datasourceUsername;
+    private String datasourcePassword;
 
     @Override
     public void parse(String[] args) {
         ArgumentValidator productIdQuantityValidator = new ProductArgumentValidator();
         ArgumentValidator discountCardValidator = ValidatorFactory.createValidator(ArgumentValidator.DISCOUNT_CARD_REGEX);
         ArgumentValidator balanceDebitCardValidator = ValidatorFactory.createValidator(ArgumentValidator.BALANCE_DEBIT_CARD_REGEX);
-        ArgumentValidator pathToFileValidator = ValidatorFactory.createValidator(ArgumentValidator.PATH_TO_FILE_REGEX);
         ArgumentValidator saveToFileValidator = ValidatorFactory.createValidator(ArgumentValidator.SAVE_TO_FILE_REGEX);
+        ArgumentValidator datasourceUrlValidator = ValidatorFactory.createValidator(ArgumentValidator.DATASOURCE_URL_REGEX);
+        ArgumentValidator datasourceUserValidator = ValidatorFactory.createValidator(ArgumentValidator.DATASOURCE_USER_REGEX);
+        ArgumentValidator datasourcePasswordValidator = ValidatorFactory.createValidator(ArgumentValidator.DATASOURCE_PASSWORD_REGEX);
 
         boolean hasProducts = false;
         boolean hasBalance = false;
-        boolean hasPathToFilePath = false;
         boolean hasSaveToFilePath = false;
+        boolean hasDatasourceUrl = false;
+        boolean hasDatasourceUsername = false;
+        boolean hasDatasourcePassword = false;
+
         RuntimeException badRequestException = CustomExceptionFactory.createException(CustomExceptionType.BAD_REQUEST);
         for (String arg : args) {
             if (arg.startsWith("discountCard=")) {
@@ -48,47 +55,68 @@ public enum ArgsParserImpl implements ArgsParser {
                     throw badRequestException;
                 productsList.add(arg.split("-"));
                 hasProducts = true;
-            } else if (arg.startsWith("pathToFile=")) {
-                if (!pathToFileValidator.validate(arg))
-                    throw badRequestException;
-                pathToFilePath = arg.substring("pathToFile=".length());
-                hasPathToFilePath = true;
             } else if (arg.startsWith("saveToFile=")) {
                 if (!saveToFileValidator.validate(arg))
                     throw badRequestException;
                 saveToFilePath = arg.substring("saveToFile=".length());
                 hasSaveToFilePath = true;
+            } else if (arg.startsWith("datasource.url=")) {
+                if (!datasourceUrlValidator.validate(arg))
+                    throw badRequestException;
+                datasourceUrl = arg.substring("datasource.url=".length());
+                hasDatasourceUrl = true;
+            } else if (arg.startsWith("datasource.username=")) {
+                if (!datasourceUserValidator.validate(arg))
+                    throw badRequestException;
+                datasourceUsername = arg.substring("datasource.username=".length());
+                hasDatasourceUsername = true;
+            } else if (arg.startsWith("datasource.password=")) {
+                if (!datasourcePasswordValidator.validate(arg))
+                    throw badRequestException;
+                datasourcePassword = arg.substring("datasource.password=".length());
+                hasDatasourcePassword = true;
             }
         }
-        if(!hasSaveToFilePath)
-            saveToFilePath = DEFAULT_RESULT_CSV;
-        if (!hasProducts || !hasBalance || !hasPathToFilePath || !hasSaveToFilePath) {
-            throw badRequestException;
+
+            if (!hasSaveToFilePath)
+                saveToFilePath = DEFAULT_RESULT_CSV;
+            if (!hasProducts || !hasBalance || !hasSaveToFilePath || !hasDatasourceUrl || !hasDatasourceUsername || !hasDatasourcePassword) {
+                throw badRequestException;
+            }
+        }
+
+        @Override
+        public int getDiscountCard () {
+            return discountCart;
+        }
+
+        @Override
+        public double getBalanceDebitCard () {
+            return balanceDebitCard;
+        }
+
+        @Override
+        public List<String[]> getProductsList () {
+            return productsList;
+        }
+
+        @Override
+        public String getSaveToFilePath () {
+            return saveToFilePath;
+        }
+
+        @Override
+        public String getDatasourceUrl () {
+            return datasourceUrl;
+        }
+
+        @Override
+        public String getDatasourceUsername () {
+            return datasourceUsername;
+        }
+
+        @Override
+        public String getDatasourcePassword () {
+            return datasourcePassword;
         }
     }
-
-    @Override
-    public int getDiscountCard() {
-        return discountCart;
-    }
-
-    @Override
-    public double getBalanceDebitCard() {
-        return balanceDebitCard;
-    }
-
-    @Override
-    public List<String[]> getProductsList() {
-        return productsList;
-    }
-
-    @Override
-    public String getPathToFilePath() {
-        return pathToFilePath;
-    }
-
-    @Override
-    public String getSaveToFilePath() {
-        return saveToFilePath;
-    }
-}

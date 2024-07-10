@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenLocal()
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.postgresql/postgresql
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
+
+}
+
+group = 'ru.clevertec'
+version = '1.0-SNAPSHOT'
+description = 'checkRunner'
+
+java.sourceCompatibility = JavaVersion.VERSION_21
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'ru.clevertec.check.CheckRunner'
+    }
+    from configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+}

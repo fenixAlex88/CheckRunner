@@ -12,7 +12,12 @@ public interface ArgsParser {
 
     List<String[]> getProductsList();
 
-    String getPathToFilePath();
-
     String getSaveToFilePath();
+
+    String getDatasourceUrl();
+
+    String getDatasourceUsername();
+
+    String getDatasourcePassword();
+
 }
