@@ -7,7 +7,7 @@ public class CheckItem {
     private final String productDescription;
     private final int quantity;
     private final double price;
-    private final double total;
+    private final double withDiscount;
     private final double discount;
 
     private CheckItem(Builder builder) {
@@ -15,7 +15,7 @@ public class CheckItem {
         this.quantity = builder.quantity;
         this.price = builder.product.getPrice();
         this.discount = (builder.product.getPrice() * builder.quantity * builder.discountPercentage) / 100;
-        this.total = builder.product.getPrice() * builder.quantity - this.discount;
+        this.withDiscount = builder.product.getPrice() * builder.quantity - this.discount;
     }
 
     public String getProductDescription() {
@@ -30,8 +30,8 @@ public class CheckItem {
         return price;
     }
 
-    public double getTotal() {
-        return total;
+    public double getWithDiscount() {
+        return withDiscount;
     }
 
     public double getDiscount() {
@@ -42,7 +42,7 @@ public class CheckItem {
     public String toString() {
         Formatter priceFormatter = FormatterImpl.PRICE;
         return ". " + productDescription + '\n' +
-                priceFormatter.format(price) + " x " + quantity + "................." + priceFormatter.format(total);
+                priceFormatter.format(price) + " x " + quantity + "................." + priceFormatter.format(withDiscount);
     }
 
     public static class Builder {

@@ -83,7 +83,7 @@ public class CheckServiceImpl implements CheckService {
                     checkItem.getProductDescription(),
                     priceFormatter.format(checkItem.getPrice()),
                     priceFormatter.format(checkItem.getDiscount()),
-                    priceFormatter.format(checkItem.getTotal())});
+                    priceFormatter.format(checkItem.getWithDiscount())});
         }
         if (discountCard != null) {
             checkData.add(new String[0]);

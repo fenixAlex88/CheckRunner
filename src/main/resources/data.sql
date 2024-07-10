@@ -1,14 +1,22 @@
-CREATE TABLE IF NOT EXISTS product (
-    id BIGSERIAL PRIMARY KEY,
-    description VARCHAR(50) NOT NULL,
-    price DECIMAL(10,2) CHECK (price >= 0),
-    quantity_in_stock INTEGER NOT NULL CHECK (quantity_in_stock >= 0),
-    wholesale_product BOOLEAN NOT NULL);
+DROP TABLE IF EXISTS products, discount_cards;
 
-CREATE TABLE IF NOT EXISTS discount_card (
-    id BIGSERIAL PRIMARY KEY,
-    number INTEGER UNIQUE NOT NULL CHECK (number >= 0),
-    amount SMALLINT NOT NULL CHECK (amount >= 0 AND amount <= 100));
+CREATE TABLE IF NOT EXISTS product
+(
+    id                BIGSERIAL PRIMARY KEY,
+    description       VARCHAR(50)   NOT NULL,
+    price             DECIMAL(5, 2) NOT NULL CHECK (price >= 0),
+    quantity_in_stock INTEGER       NOT NULL CHECK (quantity_in_stock >= 0),
+    wholesale_product BOOLEAN       NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS discount_card
+(
+    id     BIGSERIAL PRIMARY KEY,
+    number CHAR(4) UNIQUE NOT NULL CHECK (number ~ '^[0-9]{4}$'),
+    amount SMALLINT       NOT NULL CHECK (amount BETWEEN 0 AND 100)
+);
+
+CREATE INDEX idx_discount_card_number ON discount_card (number);
 
 INSERT INTO discount_card (id, number, amount)
 VALUES (1, 1111, 3),

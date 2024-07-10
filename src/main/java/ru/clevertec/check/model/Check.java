@@ -64,7 +64,7 @@ public class Check {
                         .setDiscountPercentage(discountPercentage)
                         .build();
                 checkItems.add(checkItem);
-                this.totalPrice += checkItem.getTotal();
+                this.totalPrice += checkItem.getPrice()*checkItem.getQuantity();
                 this.totalDiscount += checkItem.getDiscount();
             }
             this.totalWithDiscount = totalPrice - totalDiscount;

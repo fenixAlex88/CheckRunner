@@ -5,6 +5,6 @@ public class ProductArgumentValidator implements ArgumentValidator {
 
     @Override
     public boolean validate(String argument) {
-        return argument.matches(ID_QUANTITY_REGEX);
+        return argument != null && argument.matches(ID_QUANTITY_REGEX);
     }
 }
