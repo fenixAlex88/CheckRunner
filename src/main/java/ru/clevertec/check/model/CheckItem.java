@@ -1,13 +1,13 @@
 package ru.clevertec.check.model;
 
-import ru.clevertec.check.utils.FormatterImpl;
 import ru.clevertec.check.utils.Formatter;
+import ru.clevertec.check.utils.FormatterImpl;
 
 public class CheckItem {
     private final String productDescription;
     private final int quantity;
     private final double price;
-    private final double withDiscount;
+    private final double total;
     private final double discount;
 
     private CheckItem(Builder builder) {
@@ -15,7 +15,7 @@ public class CheckItem {
         this.quantity = builder.quantity;
         this.price = builder.product.getPrice();
         this.discount = (builder.product.getPrice() * builder.quantity * builder.discountPercentage) / 100;
-        this.withDiscount = builder.product.getPrice() * builder.quantity - this.discount;
+        this.total = builder.product.getPrice() * builder.quantity - this.discount;
     }
 
     public String getProductDescription() {
@@ -30,8 +30,8 @@ public class CheckItem {
         return price;
     }
 
-    public double getWithDiscount() {
-        return withDiscount;
+    public double getTotal() {
+        return total;
     }
 
     public double getDiscount() {
@@ -42,7 +42,7 @@ public class CheckItem {
     public String toString() {
         Formatter priceFormatter = FormatterImpl.PRICE;
         return ". " + productDescription + '\n' +
-                priceFormatter.format(price) + " x " + quantity + "................." + priceFormatter.format(withDiscount);
+                priceFormatter.format(price) + " x " + quantity + "................." + priceFormatter.format(total);
     }
 
     public static class Builder {
