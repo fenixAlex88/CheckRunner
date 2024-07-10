@@ -10,7 +10,7 @@ The project is an application for creating receipts taking into account discount
 
 •  Java 21
 
-•  Maven 3.8
+•  Gradle 8.5
 
 
 ### Installing
@@ -18,30 +18,33 @@ The project is an application for creating receipts taking into account discount
 You need to run maven to compile their package files
 
 ```bash
-mvn clean compile 
+gradle build
 ```
 
 Launch the application from the command line
 
 ```bash
-java -cp src ./src/main/java/ru/clevertec/check/CheckRunner.java id-quantity discountCard=xxxx balanceDebitCard=xxxx pathToFile=XXXX saveToFile=xxxx
+java -cp src ./src/main/java/ru/clevertec/check/CheckRunner.java id-quantity discountCard=xxxx balanceDebitCard=xxxx saveToFile=xxxx datasource.url=XXXX datasource.username=XXXX datasource.password=XXXX
 ```
-
+CheckRunner-1.0-SNAPSHOT.jar
 Where:
 1) id - the product identifier
 2) quantity - the quantity of the product
 3) discountCard=xxxx - the name and number of the discount card
 4) balanceDebitCard=xxxx - the balance on the debit card
-5) pathToFile - includes a relative (from the project root directory) path + file name with extensions (always present in the specified format)
-6) saveToFile - includes a relative (from the project root directory) path + file name with extensions
+5) saveToFile - includes a relative (from the project root directory) path + file name with extensions
+6) datasource.url -
+   the URL of the database
+7) datasource.username - the name of the user to connect to the database
+8) datasource.password - password for connecting to the database
 
 For example:
 ```bash
-java -cp target/classes ru.clevertec.check.CheckRunner 3-3 2-1 5-1 4-2 2-2 discountCard=2222 balanceDebitCard=1000 pathToFile=./products.csv saveToFile=./error_result.csv
+java -jar build/libs/CheckRunner-1.0-SNAPSHOT.jar 2-1 3-1 2-5 discountCard=1111 balanceDebitCard=100 saveToFile=./result.csv datasource.url=jdbc:postgresql://localhost:5432/check datasource.username=postgres datasource.password=postgres
 ```
 ### Description
 
-After launch, the application reads the specified file with a list of products and generates a sales receipt. If an error occurs, inform the console and the file with the sales receipt.
+After launching the application, arguments are read from the command line. They are parsed, validated and stored in the singleton class for future use. They create instances of services that access the database for data through repositories. Products are obtained from the database one at a time to maintain up-to-date information about their quantity in stock. A receipt is generated and written to a CSV file according to the command line request, as well as output to the console. With the help of the factory, custom exceptions are created, the message from which is written to a file and output to the console. JUnit tests are also written.
 
 ### Errors
 
@@ -50,7 +53,7 @@ If the input data is incorrect (not
 Arguments filled in correctly, errors
 quantity, lack of products) 
 or If no arguments are passed:
-pathToFile and/or saveToFile
+saveToFile, datasource.url, datasource.username or datasource.password
 #### NOT ENOUGH MONEY 
 If there are insufficient funds (balance
 less than the amount on the check)
