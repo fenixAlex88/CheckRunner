@@ -4,9 +4,6 @@ import ru.clevertec.check.exception.CustomExceptionFactory;
 import ru.clevertec.check.exception.CustomExceptionType;
 import ru.clevertec.check.model.*;
 import ru.clevertec.check.utils.*;
-import ru.clevertec.check.validator.ArgumentValidator;
-import ru.clevertec.check.validator.ProductArgumentValidator;
-import ru.clevertec.check.validator.ValidatorFactory;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -85,7 +82,7 @@ public class CheckServiceImpl implements CheckService {
                     checkItem.getProductDescription(),
                     priceFormatter.format(checkItem.getPrice()),
                     priceFormatter.format(checkItem.getDiscount()),
-                   priceFormatter.format(checkItem.getTotal())});
+                   priceFormatter.format(checkItem.getWithDiscount())});
         }
         if (discountCard != null) {
             checkData.add(new String[0]);
