@@ -45,7 +45,7 @@ public class CheckServiceImpl implements CheckService {
     }
 
     @Override
-    public void generateCheck () {
+    public void generateCheck() {
         RuntimeException notEnoughMoneyException = CustomExceptionFactory.createException(CustomExceptionType.NOT_ENOUGH_MONEY);
         ArgsParser argsParser = ArgsParserImpl.INSTANCE;
         discountCard = discountCardService.getDiscountCardByNumber(argsParser.getDiscountCard());
@@ -64,49 +64,54 @@ public class CheckServiceImpl implements CheckService {
     @Override
     public void saveCheckToCSV(String filePath) {
         List<String[]> checkData = new ArrayList<>();
+        final Formatter dateFormatter = FormatterImpl.DATE;
+        final Formatter timeFormatter = FormatterImpl.TIME;
+        final Formatter priceFormatter = FormatterImpl.PRICE;
+        final Formatter discountFormatter = FormatterImpl.DISCOUNT;
         final String[] dateTimeHeaders = new String[]{"Date", "Time"};
         final String[] productsHeaders = new String[]{"QTY", "DESCRIPTION", "PRICE", "DISCOUNT", "TOTAL"};
         final String[] discountInfoHeaders = new String[]{"DISCOUNT CARD", "DISCOUNT PERCENTAGE"};
         final String[] totalsHeaders = new String[]{"TOTAL PRICE", "TOTAL DISCOUNT", "TOTAL WITH DISCOUNT"};
 
         checkData.add(dateTimeHeaders);
-        checkData.add(new String[]{Formatter.DATE.format(LocalDate.now()),
-                Formatter.TIME.format(LocalTime.now())});
+        checkData.add(new String[]{dateFormatter.format(LocalDate.now()),
+                timeFormatter.format(LocalTime.now())});
         checkData.add(new String[0]);
         checkData.add(productsHeaders);
         for (CheckItem checkItem : check.getItems()) {
             checkData.add(new String[]{String.valueOf(checkItem.getQuantity()),
                     checkItem.getProductDescription(),
-                    Formatter.PRICE.format(checkItem.getPrice()),
-                    Formatter.PRICE.format(checkItem.getDiscount()),
-                    Formatter.PRICE.format(checkItem.getTotal())});
+                    priceFormatter.format(checkItem.getPrice()),
+                    priceFormatter.format(checkItem.getDiscount()),
+                    priceFormatter.format(checkItem.getTotal())});
         }
         if (discountCard != null) {
             checkData.add(new String[0]);
             checkData.add(discountInfoHeaders);
             checkData.add(new String[]{String.valueOf(discountCard.getNumber()),
-                    String.valueOf(discountCard.getAmount())});
+                    discountFormatter.format(discountCard.getAmount())});
         }
         checkData.add(new String[0]);
         checkData.add(totalsHeaders);
-        checkData.add(new String[]{Formatter.PRICE.format(check.getTotalPrice()),
-                Formatter.PRICE.format(check.getTotalDiscount()),
-                Formatter.PRICE.format(check.getTotalWithDiscount())});
+        checkData.add(new String[]{priceFormatter.format(check.getTotalPrice()),
+                priceFormatter.format(check.getTotalDiscount()),
+                priceFormatter.format(check.getTotalWithDiscount())});
         csvWorker.writeToCSV(filePath, checkData, ";");
     }
 
     @Override
     public void printCheckToConsole() {
+        Formatter priceFormatter = FormatterImpl.PRICE;
         System.out.println("-------------CHECK-------------");
         int index = 1;
         for (CheckItem checkItem : check.getItems()) {
             System.out.println(index++ + checkItem.toString());
         }
         System.out.println();
-        System.out.println("Total.................... " + Formatter.PRICE.format(check.getTotalPrice()));
-        System.out.println("Discount................. " + Formatter.PRICE.format(check.getTotalDiscount()));
-        System.out.println("Total sum with discount.. " + Formatter.PRICE.format(check.getTotalWithDiscount()));
-        System.out.println("Current balance.......... " + Formatter.PRICE.format(balanceDebitCard - check.getTotalWithDiscount()));
+        System.out.println("Total.................... " + priceFormatter.format(check.getTotalPrice()));
+        System.out.println("Discount................. " + priceFormatter.format(check.getTotalDiscount()));
+        System.out.println("Total sum with discount.. " + priceFormatter.format(check.getTotalWithDiscount()));
+        System.out.println("Current balance.......... " + priceFormatter.format(balanceDebitCard - check.getTotalWithDiscount()));
     }
 
 }
