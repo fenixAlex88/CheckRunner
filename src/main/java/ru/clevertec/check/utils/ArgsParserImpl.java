@@ -9,6 +9,8 @@ import ru.clevertec.check.validator.ValidatorFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.clevertec.check.CheckRunner.DEFAULT_RESULT_CSV;
+
 public enum ArgsParserImpl implements ArgsParser {
     INSTANCE;
 
@@ -23,10 +25,13 @@ public enum ArgsParserImpl implements ArgsParser {
         ArgumentValidator productIdQuantityValidator = new ProductArgumentValidator();
         ArgumentValidator discountCardValidator = ValidatorFactory.createValidator(ArgumentValidator.DISCOUNT_CARD_REGEX);
         ArgumentValidator balanceDebitCardValidator = ValidatorFactory.createValidator(ArgumentValidator.BALANCE_DEBIT_CARD_REGEX);
+        ArgumentValidator pathToFileValidator = ValidatorFactory.createValidator(ArgumentValidator.PATH_TO_FILE_REGEX);
+        ArgumentValidator saveToFileValidator = ValidatorFactory.createValidator(ArgumentValidator.SAVE_TO_FILE_REGEX);
 
         boolean hasProducts = false;
         boolean hasBalance = false;
-
+        boolean hasPathToFilePath = false;
+        boolean hasSaveToFilePath = false;
         RuntimeException badRequestException = CustomExceptionFactory.createException(CustomExceptionType.BAD_REQUEST);
         for (String arg : args) {
             if (arg.startsWith("discountCard=")) {
@@ -43,9 +48,21 @@ public enum ArgsParserImpl implements ArgsParser {
                     throw badRequestException;
                 productsList.add(arg.split("-"));
                 hasProducts = true;
+            } else if (arg.startsWith("pathToFile=")) {
+                if (!pathToFileValidator.validate(arg))
+                    throw badRequestException;
+                pathToFilePath = arg.substring("pathToFile=".length());
+                hasPathToFilePath = true;
+            } else if (arg.startsWith("saveToFile=")) {
+                if (!saveToFileValidator.validate(arg))
+                    throw badRequestException;
+                saveToFilePath = arg.substring("saveToFile=".length());
+                hasSaveToFilePath = true;
             }
         }
-        if (!hasProducts || !hasBalance) {
+        if(!hasSaveToFilePath)
+            saveToFilePath = DEFAULT_RESULT_CSV;
+        if (!hasProducts || !hasBalance || !hasPathToFilePath || !hasSaveToFilePath) {
             throw badRequestException;
         }
     }
@@ -63,5 +80,15 @@ public enum ArgsParserImpl implements ArgsParser {
     @Override
     public List<String[]> getProductsList() {
         return productsList;
+    }
+
+    @Override
+    public String getPathToFilePath() {
+        return pathToFilePath;
+    }
+
+    @Override
+    public String getSaveToFilePath() {
+        return saveToFilePath;
     }
 }

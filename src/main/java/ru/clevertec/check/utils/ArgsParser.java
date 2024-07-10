@@ -11,4 +11,8 @@ public interface ArgsParser {
     double getBalanceDebitCard();
 
     List<String[]> getProductsList();
+
+    String getPathToFilePath();
+
+    String getSaveToFilePath();
 }
