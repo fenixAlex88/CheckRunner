@@ -1,5 +1,6 @@
 package ru.clevertec.check.model;
 
+import ru.clevertec.check.utils.FormatterImpl;
 import ru.clevertec.check.utils.Formatter;
 
 public class CheckItem {
@@ -39,8 +40,9 @@ public class CheckItem {
 
     @Override
     public String toString() {
+        Formatter priceFormatter = FormatterImpl.PRICE;
         return ". " + productDescription + '\n' +
-                Formatter.PRICE.format(price) + " x " + quantity + "................." + Formatter.PRICE.format(total);
+                priceFormatter.format(price) + " x " + quantity + "................." + priceFormatter.format(total);
     }
 
     public static class Builder {

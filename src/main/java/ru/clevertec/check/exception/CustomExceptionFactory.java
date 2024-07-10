@@ -25,6 +25,5 @@ public class CustomExceptionFactory {
             super(message);
         }
     }
-
 }
 
