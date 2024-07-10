@@ -38,7 +38,25 @@ For example:
 java -cp target/classes ru.clevertec.check.CheckRunner 3-3 2-1 5-1 4-2 2-2 discountCard=2222 balanceDebitCard=1000
 ```
 
-Authors
+### Description
+
+Once launched, the application reads information from the launch line and generates a sales receipt. If an error occurs, notify the console and the sales receipt file.
+You can view the result of the application by opening the file ./result.csv
+
+### Errors
+
+#### BAD REQUEST
+If the input data is incorrect (not
+Arguments filled in correctly, errors
+quantity, lack of products)
+#### NOT ENOUGH MONEY
+If there are insufficient funds (balance
+less than the amount on the check)
+#### INTERNAL SERVER ERROR
+In any other situations
+
+### Authors
+
 
 Pekar Aleksey
 fenix_al@tut.by
