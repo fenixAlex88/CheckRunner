@@ -1,7 +1,7 @@
 package ru.clevertec.check.services;
 
 public interface CheckService {
-    void parseArgs(String[] args);
+    void generateCheck();
 
     void saveCheckToCSV(String filePath);
 
