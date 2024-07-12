@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS product
 CREATE TABLE IF NOT EXISTS discount_card
 (
     id     BIGSERIAL PRIMARY KEY,
-    number CHAR(4) UNIQUE NOT NULL CHECK (number ~ '^[0-9]{4}$'),
+    number INTEGER UNIQUE NOT NULL CHECK (number >= 1000 AND number < 10000),
     amount SMALLINT       NOT NULL CHECK (amount BETWEEN 0 AND 100)
 );
 
