@@ -17,16 +17,16 @@ public class CheckRunner {
 
     public static void main(String[] args) {
         ArgsParser argsParser = ArgsParserImpl.INSTANCE;
-        try {
+//        try {
             argsParser.parse(args);
             CheckService checkService = getCheckService(argsParser);
             checkService.printCheckToConsole();
-        } catch (Exception e) {
+  /*      } catch (Exception e) {
             System.err.println(e.getMessage());
             CSVWorker csvWorker = new CSVWorkerImpl();
             csvWorker.writeErrorToCSV(e.getMessage(), argsParser.getSaveToFilePath());
         }
-    }
+  */  }
 
     private static CheckService getCheckService(ArgsParser argsParser) {
         DatabaseConnection dbConnection = DatabaseConnectionImpl.getInstance();

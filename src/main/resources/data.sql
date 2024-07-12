@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS products, discount_cards;
+DROP TABLE IF EXISTS product, discount_card;
 
 CREATE TABLE IF NOT EXISTS product
 (

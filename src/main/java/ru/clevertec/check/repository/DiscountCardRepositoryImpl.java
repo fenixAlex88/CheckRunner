@@ -23,7 +23,7 @@ public class DiscountCardRepositoryImpl implements DiscountCardRepository {
         final RuntimeException internalServerErrorException = CustomExceptionFactory.createException(CustomExceptionType.INTERNAL_SERVER_ERROR);
         try (Connection connection = dbConnection.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(SQL_SELECT_DISCOUNT_CARD_BY_NUMBER)) {
-            pstmt.setInt(1, number);
+            pstmt.setString(1, String.valueOf(number));
             try (ResultSet resultSet = pstmt.executeQuery()) {
                 if (resultSet.next()) {
                     return new DiscountCard.Builder()
