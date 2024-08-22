@@ -10,6 +10,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 public class CheckServiceImpl implements CheckService {
     private final RuntimeException badRequestException = CustomExceptionFactory.createException(CustomExceptionType.BAD_REQUEST);
@@ -28,74 +30,78 @@ public class CheckServiceImpl implements CheckService {
     }
 
     private void addProductItem(int productId, int productQuantity) {
-        Product product = productService.getProductById(productId);
-        if (product == null || product.getQuantityInStock() < productQuantity) {
-            throw badRequestException;
-        }
-        ProductItem existingItem = productItems.stream()
+        Product product = Optional.ofNullable(productService.getProductById(productId))
+                .filter(p -> p.getQuantityInStock() >= productQuantity)
+                .orElseThrow(() -> badRequestException);
+
+        productItems.stream()
                 .filter(p -> p.getProduct().getId() == productId)
                 .findFirst()
-                .orElse(null);
-
-        if (existingItem != null) {
-            existingItem.setProductQuantity(existingItem.getProductQuantity() + productQuantity);
-        } else {
-            productItems.add(new ProductItem(product, productQuantity));
-        }
+                .ifPresentOrElse(
+                        existingItem -> existingItem.setProductQuantity(existingItem.getProductQuantity() + productQuantity),
+                        () -> productItems.add(new ProductItem(product, productQuantity))
+                );
     }
 
     @Override
     public void generateCheck() {
-        RuntimeException notEnoughMoneyException = CustomExceptionFactory.createException(CustomExceptionType.NOT_ENOUGH_MONEY);
         ArgsParser argsParser = ArgsParserImpl.INSTANCE;
         discountCard = discountCardService.getDiscountCardByNumber(argsParser.getDiscountCard());
         balanceDebitCard = argsParser.getBalanceDebitCard();
         List<String[]> productsList = argsParser.getProductsList();
-        for (String[] products : productsList) {
+
+        productsList.forEach(products -> {
             int productId = Integer.parseInt(products[0]);
             int productQuantity = Integer.parseInt(products[1]);
             addProductItem(productId, productQuantity);
-        }
-        check = new Check.Builder().setProductItems(productItems).setDiscountCard(discountCard).build();
-        if (check.getTotalWithDiscount() > balanceDebitCard)
-            throw notEnoughMoneyException;
+        });
+
+        check = new Check.Builder()
+                .setProductItems(productItems)
+                .setDiscountCard(discountCard)
+                .build();
+
+        Optional.of(check)
+                .filter(c -> c.getTotalWithDiscount() <= balanceDebitCard)
+                .orElseThrow(() -> CustomExceptionFactory.createException(CustomExceptionType.NOT_ENOUGH_MONEY));
     }
 
     @Override
+
     public void saveCheckToCSV(String filePath) {
         List<String[]> checkData = new ArrayList<>();
         final Formatter dateFormatter = FormatterImpl.DATE;
         final Formatter timeFormatter = FormatterImpl.TIME;
         final Formatter priceFormatter = FormatterImpl.PRICE;
         final Formatter discountFormatter = FormatterImpl.DISCOUNT;
-        final String[] dateTimeHeaders = new String[]{"Date", "Time"};
-        final String[] productsHeaders = new String[]{"QTY", "DESCRIPTION", "PRICE", "DISCOUNT", "TOTAL"};
-        final String[] discountInfoHeaders = new String[]{"DISCOUNT CARD", "DISCOUNT PERCENTAGE"};
-        final String[] totalsHeaders = new String[]{"TOTAL PRICE", "TOTAL DISCOUNT", "TOTAL WITH DISCOUNT"};
 
-        checkData.add(dateTimeHeaders);
-        checkData.add(new String[]{dateFormatter.format(LocalDate.now()),
-                timeFormatter.format(LocalTime.now())});
+        checkData.add(new String[]{"Date", "Time"});
+        checkData.add(new String[]{dateFormatter.format(LocalDate.now()), timeFormatter.format(LocalTime.now())});
+
         checkData.add(new String[0]);
-        checkData.add(productsHeaders);
-        for (CheckItem checkItem : check.getItems()) {
-            checkData.add(new String[]{String.valueOf(checkItem.getQuantity()),
-                    checkItem.getProductDescription(),
-                    priceFormatter.format(checkItem.getPrice()),
-                    priceFormatter.format(checkItem.getDiscount()),
-                    priceFormatter.format(checkItem.getWithDiscount())});
-        }
-        if (discountCard != null) {
+        checkData.add(new String[]{"QTY", "DESCRIPTION", "PRICE", "DISCOUNT", "TOTAL"});
+        check.getItems().forEach(checkItem -> checkData.add(new String[]{
+                String.valueOf(checkItem.getQuantity()),
+                checkItem.getProductDescription(),
+                priceFormatter.format(checkItem.getPrice()),
+                priceFormatter.format(checkItem.getDiscount()),
+                priceFormatter.format(checkItem.getWithDiscount())
+        }));
+
+        Optional.ofNullable(discountCard).ifPresent(card -> {
             checkData.add(new String[0]);
-            checkData.add(discountInfoHeaders);
-            checkData.add(new String[]{String.valueOf(discountCard.getNumber()),
-                    discountFormatter.format(discountCard.getAmount())});
-        }
+            checkData.add(new String[]{"DISCOUNT CARD", "DISCOUNT PERCENTAGE"});
+            checkData.add(new String[]{String.valueOf(card.getNumber()), discountFormatter.format(card.getAmount())});
+        });
+
         checkData.add(new String[0]);
-        checkData.add(totalsHeaders);
-        checkData.add(new String[]{priceFormatter.format(check.getTotalPrice()),
+        checkData.add(new String[]{"TOTAL PRICE", "TOTAL DISCOUNT", "TOTAL WITH DISCOUNT"});
+        checkData.add(new String[]{
+                priceFormatter.format(check.getTotalPrice()),
                 priceFormatter.format(check.getTotalDiscount()),
-                priceFormatter.format(check.getTotalWithDiscount())});
+                priceFormatter.format(check.getTotalWithDiscount())
+        });
+
         csvWorker.writeToCSV(filePath, checkData, ";");
     }
 
@@ -103,10 +109,9 @@ public class CheckServiceImpl implements CheckService {
     public void printCheckToConsole() {
         Formatter priceFormatter = FormatterImpl.PRICE;
         System.out.println("-------------CHECK-------------");
-        int index = 1;
-        for (CheckItem checkItem : check.getItems()) {
-            System.out.println(index++ + checkItem.toString());
-        }
+        IntStream.range(0, check.getItems().size())
+                .mapToObj(i -> (i + 1) + ". " + check.getItems().get(i).toString())
+                .forEach(System.out::println);
         System.out.println();
         System.out.println("Total.................... " + priceFormatter.format(check.getTotalPrice()));
         System.out.println("Discount................. " + priceFormatter.format(check.getTotalDiscount()));

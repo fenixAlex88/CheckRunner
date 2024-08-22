@@ -2,6 +2,8 @@ package ru.clevertec.check.repository;
 
 import ru.clevertec.check.model.DiscountCard;
 
+import java.util.Optional;
+
 public interface DiscountCardRepository {
-    DiscountCard getDiscountCardByNumber(int number);
+    Optional<DiscountCard> getDiscountCardByNumber(int number);
 }

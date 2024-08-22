@@ -2,6 +2,7 @@ package ru.clevertec.check.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Check {
     private final List<CheckItem> items;
@@ -51,24 +52,29 @@ public class Check {
         }
 
         public Check build() {
-            if (productItems == null) {
-                throw new IllegalStateException("Product items must be set before building.");
-            }
-            int discountPercentage = discountCard == null ? 0 : discountCard.getAmount();
-            for (ProductItem productItem : productItems) {
-                Product product = productItem.getProduct();
-                int quantity = productItem.getProductQuantity();
-                CheckItem checkItem = new CheckItem.Builder()
-                        .setProduct(product)
-                        .setQuantity(quantity)
-                        .setDiscountPercentage(discountPercentage)
-                        .build();
-                checkItems.add(checkItem);
-                this.totalPrice += checkItem.getPrice()*checkItem.getQuantity();
-                this.totalDiscount += checkItem.getDiscount();
-            }
+            Optional.ofNullable(productItems)
+                    .orElseThrow(()-> new IllegalStateException("Product items must be set before building."));
+
+            int discountPercentage = Optional.ofNullable(discountCard)
+                    .map(DiscountCard::getAmount)
+                    .orElse(0);
+
+            productItems.forEach(productItem -> addCheckItem(productItem, discountPercentage));
             this.totalWithDiscount = totalPrice - totalDiscount;
             return new Check(this);
+        }
+
+        private void addCheckItem(ProductItem productItem, int discountPercentage) {
+            Product product = productItem.getProduct();
+            int quantity = productItem.getProductQuantity();
+            CheckItem checkItem = new CheckItem.Builder()
+                    .setProduct(product)
+                    .setQuantity(quantity)
+                    .setDiscountPercentage(discountPercentage)
+                    .build();
+            checkItems.add(checkItem);
+            this.totalPrice += checkItem.getPrice() * checkItem.getQuantity();
+            this.totalDiscount += checkItem.getDiscount();
         }
     }
 }

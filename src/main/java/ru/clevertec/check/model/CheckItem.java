@@ -3,6 +3,8 @@ package ru.clevertec.check.model;
 import ru.clevertec.check.utils.Formatter;
 import ru.clevertec.check.utils.FormatterImpl;
 
+import java.util.Optional;
+
 public class CheckItem {
     private final String productDescription;
     private final int quantity;
@@ -41,8 +43,14 @@ public class CheckItem {
     @Override
     public String toString() {
         Formatter priceFormatter = FormatterImpl.PRICE;
-        return ". " + productDescription + '\n' +
-                priceFormatter.format(price) + " x " + quantity + "................." + priceFormatter.format(withDiscount);
+        return ". " +
+                productDescription +
+                "\n" +
+                priceFormatter.format(price) +
+                " x " +
+                quantity +
+                "................." +
+                priceFormatter.format(withDiscount);
     }
 
     public static class Builder {
@@ -67,9 +75,10 @@ public class CheckItem {
         }
 
         public CheckItem build() {
-            if (product.isWholesale() && quantity >= 5) {
-                this.discountPercentage = 10;
-            }
+            Optional.of(this)
+                    .filter(item -> item.product.isWholesale() && item.quantity >= 5)
+                    .ifPresent(item -> item.discountPercentage = 10);
+
             return new CheckItem(this);
         }
     }

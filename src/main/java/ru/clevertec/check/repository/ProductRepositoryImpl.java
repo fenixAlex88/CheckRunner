@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class ProductRepositoryImpl implements ProductRepository {
     private final DatabaseConnection dbConnection;
@@ -19,26 +20,27 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public Product findById(int id) {
+    public Optional<Product> findById(int id) {
     final RuntimeException internalServerErrorException = CustomExceptionFactory.createException(CustomExceptionType.INTERNAL_SERVER_ERROR);
         try (Connection connection = dbConnection.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(SQL_SELECT_PRODUCT_BY_ID)) {
             pstmt.setInt(1, id);
             try (ResultSet resultSet = pstmt.executeQuery()) {
                 if (resultSet.next()) {
-                    return new Product.Builder()
+                    Product product = new Product.Builder()
                             .setId(resultSet.getInt("id"))
                             .setDescription(resultSet.getString("description"))
                             .setPrice(resultSet.getDouble("price"))
                             .setQuantityInStock(resultSet.getInt("quantity_in_stock"))
                             .setWholesale(resultSet.getBoolean("wholesale_product"))
                             .build();
+                    return Optional.of(product);
                 }
             }
         } catch (SQLException e) {
             throw internalServerErrorException;
         }
-        return null;
+        return Optional.empty();
     }
 }
 

@@ -1,5 +1,7 @@
 package ru.clevertec.check.model;
 
+import java.util.Optional;
+
 public class DiscountCard {
     private final int id;
     private final int number;
@@ -32,12 +34,11 @@ public class DiscountCard {
         }
 
         public DiscountCard build() {
-            return new DiscountCard(this);
+            return Optional.of(this)
+                    .filter(card -> card.id > 0 && card.number > 0 && card.amount >= 0)
+                    .map(DiscountCard::new)
+                    .orElseThrow(() -> new IllegalStateException("Все поля должны быть корректно заполнены"));
         }
-    }
-
-    public int getId() {
-        return id;
     }
 
     public int getNumber() {

@@ -8,6 +8,7 @@ import ru.clevertec.check.utils.ArgsParserImpl;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class DatabaseConnectionImpl implements DatabaseConnection {
     private static DatabaseConnectionImpl instance;
@@ -17,26 +18,38 @@ public class DatabaseConnectionImpl implements DatabaseConnection {
     }
 
     public static synchronized DatabaseConnectionImpl getInstance() {
-        if (instance == null) {
-            instance = new DatabaseConnectionImpl();
-        }
-        return instance;
+        return Optional.ofNullable(instance)
+                .orElseGet(() -> {
+                    instance = new DatabaseConnectionImpl();
+                    return instance;
+                });
     }
 
+
     public Connection getConnection() {
-        final RuntimeException internalServerErrorException = CustomExceptionFactory.createException(CustomExceptionType.INTERNAL_SERVER_ERROR);
         ArgsParser argsParser = ArgsParserImpl.INSTANCE;
         try {
-            if (this.connection == null || this.connection.isClosed()) {
-                DriverManager.registerDriver(new org.postgresql.Driver());
-                connection = DriverManager.getConnection(
-                        argsParser.getDatasourceUrl(),
-                        argsParser.getDatasourceUsername(),
-                        argsParser.getDatasourcePassword()
-                );
-            }
-        } catch (SQLException e) {
-            throw internalServerErrorException;
+            connection = Optional.ofNullable(connection)
+                    .filter(conn -> {
+                        try {
+                            return !conn.isClosed();
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .orElseGet(() -> {
+                        try {
+                            DriverManager.registerDriver(new org.postgresql.Driver());
+                            return DriverManager.getConnection(
+                                    argsParser.getDatasourceUrl(),
+                                    argsParser.getDatasourceUsername(),
+                                    argsParser.getDatasourcePassword());
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+        } catch (RuntimeException e) {
+            throw CustomExceptionFactory.createException(CustomExceptionType.INTERNAL_SERVER_ERROR);
         }
         return connection;
     }

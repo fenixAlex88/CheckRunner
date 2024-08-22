@@ -1,6 +1,8 @@
 package ru.clevertec.check.model;
 
 
+import java.util.Optional;
+
 public class Product {
     private final int id;
     private final String description;
@@ -69,7 +71,10 @@ public class Product {
         }
 
         public Product build() {
-            return new Product(this);
+            return Optional.of(this)
+                    .filter(product -> product.description != null && product.price > 0)
+                    .map(Product::new)
+                    .orElseThrow(() -> new IllegalStateException("Описание и цена должны быть указаны"));
         }
     }
 }
