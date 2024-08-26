@@ -49,6 +49,7 @@ public enum ArgsParserImpl implements ArgsParser {
                         .findFirst()
                         .ifPresent(entry -> entry.getValue().accept(arg))
         );
+        System.out.println("datasourcePassword:" + datasourcePassword);
         validateRequiredArguments();
     }
 
@@ -92,6 +93,16 @@ public enum ArgsParserImpl implements ArgsParser {
     private void processDatasourcePassword(String arg) {
         if (!datasourcePasswordValidator.validate(arg)) throw badRequestException;
         datasourcePassword = arg.substring("datasource.password=".length());
+    }
+
+    public void reset() {
+        discountCart = 0;
+        balanceDebitCard = 0.0;
+        productsList.clear();
+        saveToFilePath = null;
+        datasourceUrl = null;
+        datasourceUsername = null;
+        datasourcePassword = null;
     }
 
     @Override

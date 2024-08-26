@@ -19,5 +19,4 @@ public interface ArgsParser {
     String getDatasourceUsername();
 
     String getDatasourcePassword();
-
 }
