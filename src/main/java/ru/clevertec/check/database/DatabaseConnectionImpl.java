@@ -24,7 +24,7 @@ public class DatabaseConnectionImpl implements DatabaseConnection {
                     return instance;
                 });
     }
-
+    @Override
 
     public Connection getConnection() {
         ArgsParser argsParser = ArgsParserImpl.INSTANCE;
