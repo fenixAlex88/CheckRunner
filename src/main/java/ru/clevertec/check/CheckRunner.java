@@ -29,12 +29,13 @@ public class CheckRunner {
     }
 
     static CheckService getCheckService(ArgsParser argsParser) {
+        CSVWorker csvWorker = new CSVWorkerImpl();
         DatabaseConnection dbConnection = DatabaseConnectionImpl.getInstance();
         ProductRepository productRepository = new ProductRepositoryImpl(dbConnection);
         DiscountCardRepository discountCardRepository = new DiscountCardRepositoryImpl(dbConnection);
         ProductService productService = new ProductServiceDBImpl(productRepository);
         DiscountCardService discountCardService = new DiscountCardServiceDBImpl(discountCardRepository);
-        CheckService checkService = new CheckServiceImpl(productService, discountCardService);
+        CheckService checkService = new CheckServiceImpl(productService, discountCardService, csvWorker);
 
         checkService.generateCheck();
 

@@ -43,8 +43,7 @@ public class CheckItem {
     @Override
     public String toString() {
         Formatter priceFormatter = FormatterImpl.PRICE;
-        return ". " +
-                productDescription +
+        return  productDescription +
                 "\n" +
                 priceFormatter.format(price) +
                 " x " +

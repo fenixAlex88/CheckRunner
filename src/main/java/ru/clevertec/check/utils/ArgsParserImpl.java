@@ -49,7 +49,6 @@ public enum ArgsParserImpl implements ArgsParser {
                         .findFirst()
                         .ifPresent(entry -> entry.getValue().accept(arg))
         );
-        System.out.println("datasourcePassword:" + datasourcePassword);
         validateRequiredArguments();
     }
 

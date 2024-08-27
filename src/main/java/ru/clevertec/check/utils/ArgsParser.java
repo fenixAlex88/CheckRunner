@@ -3,6 +3,7 @@ package ru.clevertec.check.utils;
 import java.util.List;
 
 public interface ArgsParser {
+    void reset();
 
     void parse(String[] args);
 
