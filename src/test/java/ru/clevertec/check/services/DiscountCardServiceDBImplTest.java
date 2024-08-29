@@ -1,5 +1,6 @@
 package ru.clevertec.check.services;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("DiscountCardServiceDBImpl Tests")
 public class DiscountCardServiceDBImplTest {
 
     @Mock
@@ -25,6 +27,7 @@ public class DiscountCardServiceDBImplTest {
     private DiscountCardServiceDBImpl discountCardService;
 
     @Test
+    @DisplayName("Test getDiscountCardByNumber returns discount card when found")
     public void testGetDiscountCardByNumberSuccess() {
         DiscountCard discountCard = new DiscountCard.Builder()
                 .setId(1)
@@ -40,10 +43,10 @@ public class DiscountCardServiceDBImplTest {
     }
 
     @Test
+    @DisplayName("Test getDiscountCardByNumber throws exception when not found")
     public void testGetDiscountCardByNumberNotFound() {
         when(discountCardRepository.getDiscountCardByNumber(1111)).thenReturn(Optional.empty());
 
-        assertThrows(NoSuchElementException.class, () ->discountCardService.getDiscountCardByNumber(1111));
-
+        assertThrows(NoSuchElementException.class, () -> discountCardService.getDiscountCardByNumber(1111));
     }
 }

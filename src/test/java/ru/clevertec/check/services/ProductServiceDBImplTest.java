@@ -1,5 +1,6 @@
 package ru.clevertec.check.services;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("ProductServiceDBImpl Tests")
 public class ProductServiceDBImplTest {
 
     @Mock
@@ -25,6 +27,7 @@ public class ProductServiceDBImplTest {
     private ProductServiceDBImpl productService;
 
     @Test
+    @DisplayName("Test getProductById returns product when found")
     public void testGetProductByIdSuccess() {
         Product product = new Product.Builder()
                 .setId(1)
@@ -42,6 +45,7 @@ public class ProductServiceDBImplTest {
     }
 
     @Test
+    @DisplayName("Test getProductById throws exception when not found")
     public void testGetProductByIdNotFound() {
         when(productRepository.findById(1)).thenReturn(Optional.empty());
 

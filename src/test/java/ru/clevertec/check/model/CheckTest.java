@@ -1,5 +1,6 @@
 package ru.clevertec.check.model;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -8,9 +9,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@DisplayName("Check Test Suite")
 public class CheckTest {
 
     @Test
+    @DisplayName("Test Check Builder with Valid Data")
     public void testCheckBuilderWithValidData() {
         Product product = new Product.Builder().setId(1).setDescription("Test Product").setQuantityInStock(10).setPrice(50.0).build();
         ProductItem productItem = new ProductItem(product, 2);
@@ -31,6 +34,7 @@ public class CheckTest {
     }
 
     @Test
+    @DisplayName("Test Check Builder without Discount Card")
     public void testCheckBuilderWithoutDiscountCard() {
         Product product = new Product.Builder().setId(1).setDescription("Test Product").setQuantityInStock(10).setPrice(50.0).build();
         ProductItem productItem = new ProductItem(product, 2);
@@ -48,6 +52,7 @@ public class CheckTest {
     }
 
     @Test
+    @DisplayName("Test Check Builder with Empty Product Items")
     public void testCheckBuilderWithEmptyProductItems() {
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> new Check.Builder().build());
 

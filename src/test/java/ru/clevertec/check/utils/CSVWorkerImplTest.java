@@ -30,14 +30,14 @@ class CSVWorkerImplTest {
                 new String[]{"1", "Apple", "0.99"},
                 new String[]{"2", "Banana", "0.59"}
         );
-        String delimiter = ",";
+        String delimiter = ";";
 
         csvWorker.writeToCSV(filePath.toString(), data, delimiter);
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath.toFile()))) {
-            assertEquals("id,name,price", br.readLine());
-            assertEquals("1,Apple,0.99", br.readLine());
-            assertEquals("2,Banana,0.59", br.readLine());
+            assertEquals("id;name;price", br.readLine());
+            assertEquals("1;Apple;0.99", br.readLine());
+            assertEquals("2;Banana;0.59", br.readLine());
         }
     }
 
@@ -45,7 +45,7 @@ class CSVWorkerImplTest {
     @DisplayName("Test writing error to CSV")
     void testWriteErrorToCSV(@TempDir Path tempDir) throws IOException {
         Path filePath = tempDir.resolve("error.csv");
-        String errorMessage = "An unexpected error occurred";
+        String errorMessage = "Error message";
 
         csvWorker.writeErrorToCSV(errorMessage, filePath.toString());
 
@@ -63,20 +63,20 @@ class CSVWorkerImplTest {
                 new String[]{"1", "Apple", "0.99"},
                 new String[]{"2", "Banana", "0.59"}
         );
-        String delimiter = ",";
+        String delimiter = ";";
 
         assertThrows(internalServerErrorException.getClass(), () -> {
-            csvWorker.writeToCSV("/invalid/path/data.csv", data, delimiter);
+            csvWorker.writeToCSV("invalid/path", data, delimiter);
         });
     }
 
     @Test
     @DisplayName("Test writeErrorToCSV throws exception on IO error")
     void testWriteErrorToCSVThrowsException() {
-        String errorMessage = "An unexpected error occurred";
+        String errorMessage = "Error message";
 
         assertThrows(internalServerErrorException.getClass(), () -> {
-            csvWorker.writeErrorToCSV(errorMessage, "/invalid/path/error.csv");
+            csvWorker.writeErrorToCSV(errorMessage, "invalid/path");
         });
     }
 }

@@ -1,7 +1,5 @@
 package ru.clevertec.check.validator;
 
-import jdk.jfr.Enabled;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

@@ -1,12 +1,13 @@
 package ru.clevertec.check.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,8 +20,10 @@ import ru.clevertec.check.utils.CSVWorker;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("CheckServiceImpl Tests")
 public class CheckServiceImplTest {
     private final PrintStream standardOut = System.out;
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
@@ -86,6 +89,7 @@ public class CheckServiceImplTest {
     }
 
     @Test
+    @DisplayName("Test generateCheck method success")
     public void testGenerateCheckSuccess() {
         checkService.generateCheck();
 
@@ -95,6 +99,7 @@ public class CheckServiceImplTest {
     }
 
     @Test
+    @DisplayName("Test generateCheck method with not enough money")
     public void testGenerateCheckNotEnoughMoney() {
         argsParser.parse(new String[]{
                 "balanceDebitCard=10.0"
@@ -106,6 +111,7 @@ public class CheckServiceImplTest {
     }
 
     @Test
+    @DisplayName("Test generateCheck method with insufficient stock quantity")
     public void testGenerateCheckNotQuantityInStock() {
         argsParser.parse(new String[]{
                 "1-60"
@@ -117,6 +123,7 @@ public class CheckServiceImplTest {
     }
 
     @Test
+    @DisplayName("Test generateCheck method with non-existent product")
     public void testGenerateCheckProductNotExist() {
         argsParser.parse(new String[]{
                 "7-7"
@@ -128,6 +135,7 @@ public class CheckServiceImplTest {
     }
 
     @Test
+    @DisplayName("Test saveCheckToCSV method")
     public void testSaveCheckToCSV() {
         when(discountCardService.getDiscountCardByNumber(1111)).thenReturn(discountCard);
         when(productService.getProductById(1)).thenReturn(product1);
@@ -138,10 +146,33 @@ public class CheckServiceImplTest {
 
         checkService.saveCheckToCSV("test.csv");
 
-        verify(csvWorker, times(1)).writeToCSV(eq("test.csv"), anyList(), eq(";"));
+        ArgumentCaptor<List<String[]>> captor = ArgumentCaptor.forClass((Class) List.class);
+        verify(csvWorker, times(1)).writeToCSV(eq("test.csv"), captor.capture(), eq(";"));
+
+        List<String[]> capturedList = captor.getValue();
+        assertNotNull(capturedList);
+        assertFalse(capturedList.isEmpty());
+
+        String[] expectedProductLine1 = {"QTY", "DESCRIPTION", "PRICE", "DISCOUNT", "TOTAL"};
+        String[] expectedProductLine2 = {"6", "Test Product 1", "5,00$", "3,00$", "27,00$"};
+        String[] expectedProductLine3 = {"3", "Test Product 2", "50,00$", "7,50$", "142,50$"};
+        String[] expectedDiscountLine1 = {"DISCOUNT CARD", "DISCOUNT PERCENTAGE"};
+        String[] expectedDiscountLine2 = {"1111", "5%"};
+        String[] expectedTotalLine1 = {"TOTAL PRICE", "TOTAL DISCOUNT", "TOTAL WITH DISCOUNT"};
+        String[] expectedTotalLine2 = {"180,00$", "10,50$", "169,50$"};
+
+        assertEquals(12, capturedList.size(), "Captured list should contain one element");
+        assertArrayEquals(expectedProductLine1, capturedList.get(3));
+        assertArrayEquals(expectedProductLine2, capturedList.get(4));
+        assertArrayEquals(expectedProductLine3, capturedList.get(5));
+        assertArrayEquals(expectedDiscountLine1, capturedList.get(7));
+        assertArrayEquals(expectedDiscountLine2, capturedList.get(8));
+        assertArrayEquals(expectedTotalLine1, capturedList.get(10));
+        assertArrayEquals(expectedTotalLine2, capturedList.get(11));
     }
 
     @Test
+    @DisplayName("Test printCheckToConsole method")
     public void testPrintCheckToConsole() {
         String expected = """
                 -------------CHECK-------------
