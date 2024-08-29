@@ -12,6 +12,8 @@ import ru.clevertec.check.utils.ArgsParserImpl;
 import ru.clevertec.check.utils.CSVWorker;
 import ru.clevertec.check.utils.CSVWorkerImpl;
 
+import java.util.Arrays;
+
 public class CheckRunner {
     public static final String DEFAULT_RESULT_CSV = "./result.csv";
 
@@ -19,7 +21,7 @@ public class CheckRunner {
         ArgsParser argsParser = ArgsParserImpl.INSTANCE;
         try {
             argsParser.parse(args);
-            CheckService checkService = getCheckService(argsParser);
+            CheckService checkService = getCheckService();
             checkService.printCheckToConsole();
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -28,7 +30,8 @@ public class CheckRunner {
         }
     }
 
-    static CheckService getCheckService(ArgsParser argsParser) {
+    static CheckService getCheckService() {
+        ArgsParser argsParser = ArgsParserImpl.INSTANCE;
         CSVWorker csvWorker = new CSVWorkerImpl();
         DatabaseConnection dbConnection = DatabaseConnectionImpl.getInstance();
         ProductRepository productRepository = new ProductRepositoryImpl(dbConnection);
