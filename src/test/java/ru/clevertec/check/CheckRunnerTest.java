@@ -73,13 +73,13 @@ public class CheckRunnerTest {
                     CREATE INDEX idx_discount_card_number ON discount_card (number);
                     """);
             statement.execute("""
-                    INSERT INTO product (id, description, price, quantity_in_stock, wholesale_product) VALUES 
-                    (1, 'Milk', 1.07, 10, true), 
-                    (2, 'Cream 400g', 2.71, 20, true), 
+                    INSERT INTO product (id, description, price, quantity_in_stock, wholesale_product) VALUES
+                    (1, 'Milk', 1.07, 10, true),
+                    (2, 'Cream 400g', 2.71, 20, true),
                     (3, 'Yogurt 400g', 2.10, 7, true);
                     """);
             statement.execute("""
-                    INSERT INTO discount_card (id, number, amount) VALUES 
+                    INSERT INTO discount_card (id, number, amount) VALUES
                     (1, 1111, 3);
                     """);
         }

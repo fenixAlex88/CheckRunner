@@ -65,9 +65,7 @@ class CSVWorkerImplTest {
         );
         String delimiter = ";";
 
-        assertThrows(internalServerErrorException.getClass(), () -> {
-            csvWorker.writeToCSV("invalid/path", data, delimiter);
-        });
+        assertThrows(internalServerErrorException.getClass(), () -> csvWorker.writeToCSV("invalid/path", data, delimiter));
     }
 
     @Test
@@ -75,8 +73,6 @@ class CSVWorkerImplTest {
     void testWriteErrorToCSVThrowsException() {
         String errorMessage = "Error message";
 
-        assertThrows(internalServerErrorException.getClass(), () -> {
-            csvWorker.writeErrorToCSV(errorMessage, "invalid/path");
-        });
+        assertThrows(internalServerErrorException.getClass(), () -> csvWorker.writeErrorToCSV(errorMessage, "invalid/path"));
     }
 }
