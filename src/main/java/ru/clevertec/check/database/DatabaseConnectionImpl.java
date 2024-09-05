@@ -1,7 +1,5 @@
 package ru.clevertec.check.database;
 
-import ru.clevertec.check.exception.CustomExceptionFactory;
-import ru.clevertec.check.exception.CustomExceptionType;
 import ru.clevertec.check.utils.ArgsParser;
 import ru.clevertec.check.utils.ArgsParserImpl;
 
@@ -24,11 +22,10 @@ public class DatabaseConnectionImpl implements DatabaseConnection {
                     return instance;
                 });
     }
-
+    @Override
 
     public Connection getConnection() {
         ArgsParser argsParser = ArgsParserImpl.INSTANCE;
-        try {
             connection = Optional.ofNullable(connection)
                     .filter(conn -> {
                         try {
@@ -48,9 +45,6 @@ public class DatabaseConnectionImpl implements DatabaseConnection {
                             throw new RuntimeException(e);
                         }
                     });
-        } catch (RuntimeException e) {
-            throw CustomExceptionFactory.createException(CustomExceptionType.INTERNAL_SERVER_ERROR);
-        }
         return connection;
     }
 }

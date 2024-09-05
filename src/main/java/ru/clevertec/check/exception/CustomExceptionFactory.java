@@ -1,6 +1,8 @@
 package ru.clevertec.check.exception;
 
 public class CustomExceptionFactory {
+    private CustomExceptionFactory(){}
+
     public static RuntimeException createException(CustomExceptionType type) {
         return switch (type) {
             case BAD_REQUEST -> new BadRequestException(type.getErrorMessage());

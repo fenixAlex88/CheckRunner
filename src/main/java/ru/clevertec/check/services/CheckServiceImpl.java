@@ -18,15 +18,16 @@ public class CheckServiceImpl implements CheckService {
     private final ProductService productService;
     private final DiscountCardService discountCardService;
     private final List<ProductItem> productItems = new ArrayList<>();
-    private final CSVWorker csvWorker = new CSVWorkerImpl();
+    private final CSVWorker csvWorker;
 
     private DiscountCard discountCard;
     private double balanceDebitCard;
     private Check check;
 
-    public CheckServiceImpl(ProductService productService, DiscountCardService discountCardService) {
+    public CheckServiceImpl(ProductService productService, DiscountCardService discountCardService, CSVWorker csvWorker) {
         this.productService = productService;
         this.discountCardService = discountCardService;
+        this.csvWorker = csvWorker;
     }
 
     private void addProductItem(int productId, int productQuantity) {
@@ -101,7 +102,6 @@ public class CheckServiceImpl implements CheckService {
                 priceFormatter.format(check.getTotalDiscount()),
                 priceFormatter.format(check.getTotalWithDiscount())
         });
-
         csvWorker.writeToCSV(filePath, checkData, ";");
     }
 

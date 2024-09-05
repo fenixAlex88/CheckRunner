@@ -35,7 +35,7 @@ public class DiscountCard {
 
         public DiscountCard build() {
             return Optional.of(this)
-                    .filter(card -> card.id > 0 && card.number > 0 && card.amount >= 0)
+                    .filter(card -> card.number > 0 && card.amount >= 0)
                     .map(DiscountCard::new)
                     .orElseThrow(() -> new IllegalStateException("Все поля должны быть корректно заполнены"));
         }

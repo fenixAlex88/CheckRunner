@@ -17,24 +17,26 @@ public class CheckRunner {
 
     public static void main(String[] args) {
         ArgsParser argsParser = ArgsParserImpl.INSTANCE;
-//        try {
+        try {
             argsParser.parse(args);
-            CheckService checkService = getCheckService(argsParser);
+            CheckService checkService = getCheckService();
             checkService.printCheckToConsole();
-  /*      } catch (Exception e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             CSVWorker csvWorker = new CSVWorkerImpl();
             csvWorker.writeErrorToCSV(e.getMessage(), argsParser.getSaveToFilePath());
         }
-  */  }
+    }
 
-    private static CheckService getCheckService(ArgsParser argsParser) {
+    static CheckService getCheckService() {
+        ArgsParser argsParser = ArgsParserImpl.INSTANCE;
+        CSVWorker csvWorker = new CSVWorkerImpl();
         DatabaseConnection dbConnection = DatabaseConnectionImpl.getInstance();
         ProductRepository productRepository = new ProductRepositoryImpl(dbConnection);
         DiscountCardRepository discountCardRepository = new DiscountCardRepositoryImpl(dbConnection);
         ProductService productService = new ProductServiceDBImpl(productRepository);
         DiscountCardService discountCardService = new DiscountCardServiceDBImpl(discountCardRepository);
-        CheckService checkService = new CheckServiceImpl(productService, discountCardService);
+        CheckService checkService = new CheckServiceImpl(productService, discountCardService, csvWorker);
 
         checkService.generateCheck();
 

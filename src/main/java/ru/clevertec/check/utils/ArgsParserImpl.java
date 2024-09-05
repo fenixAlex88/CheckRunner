@@ -94,6 +94,16 @@ public enum ArgsParserImpl implements ArgsParser {
         datasourcePassword = arg.substring("datasource.password=".length());
     }
 
+    public void reset() {
+        discountCart = 0;
+        balanceDebitCard = 0.0;
+        productsList.clear();
+        saveToFilePath = null;
+        datasourceUrl = null;
+        datasourceUsername = null;
+        datasourcePassword = null;
+    }
+
     @Override
     public int getDiscountCard() {
         return discountCart;
